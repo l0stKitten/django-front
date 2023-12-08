@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react'
-
+import React, { useState, useEffect } from 'react'
+import axios from 'axios';
 import Post from './Post'
 import ChatsandContact from './ChatsandContact';
 import CreatePost from './CreatePost';
 import Typography from '@mui/material/Typography';
-
+import {URL_F} from "../config"
 import Grid from '@mui/material/Grid';
 import { useMediaQuery } from '@mui/material';
 
@@ -27,6 +27,25 @@ export default function PostsList() {
 
 	const isXs = useMediaQuery('(max-width:996px)'); // Adjust the width to match your "xs" breakpoint
 
+	const [postsListData, setPostList] = useState([]);
+	
+	useEffect( () => { 
+		
+		async function getPosts() {
+			axios.defaults.withCredentials = true;
+			await axios.get(URL_F + "api/v1/all")
+			.then((response) => {
+				console.log(response.data)
+				setPostList(response.data.results)
+			}).catch((error) => {
+				console.log(error)
+			});
+		}
+
+		getPosts()
+		
+	}, [])
+
 	return (
 		<Grid container spacing={2} marginRight={2}>
 			<Grid container item xs={isXs ? 12 : 10} 
@@ -36,9 +55,12 @@ export default function PostsList() {
 				gap={4}
 			>
 				<CreatePost></CreatePost>
-				{Array.from(Array(6)).map((_, index) => (
-					<Post key={index}>xs=8</Post>
+				
+				{postsListData.length > 0 && postsListData.map((post) => (
+					<span key={post.id}> {post.id} </span>
+					/*<Post key={index}>xs=8</Post>*/
 				))}
+
 			</Grid>
 			{isXs ? null : <Grid item xs={2} container
 				direction="column"
