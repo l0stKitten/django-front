@@ -138,7 +138,7 @@ export default function Menu(props) {
 		<Box sx={{ display: 'flex' }}>
 		<CssBaseline />
 
-		<AppBarCC position={'relative'} openVar={open} cannotOpen={cannotOpen} handleDrawerOpen={handleDrawerOpen} sx={{ml: 1}}/>
+		<AppBarCC position={'relative'} openVar={open} cannotOpen={cannotOpen} handleDrawerOpen={handleDrawerOpen} username={props.username} points={props.points} sx={{ml: 1}}/>
 		<Drawer variant="permanent" open={open && !cannotOpen} PaperProps={{style: {border: 'none'}}} sx={{ display: { xs: {handleDrawerClose}}}}>
 			<DrawerHeader>
 				{!open && !cannotOpen && <IconButton 

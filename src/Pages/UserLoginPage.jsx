@@ -53,7 +53,7 @@ const LoginForm = () => {
 
 		await axios.post(URL_F + "api/v1/login", {username:email, password})
 			.then((response) => {
-				console.log(response.data);
+				localStorage.setItem('data', JSON.stringify(response.data.user));
 				navigate('/posts')
 			}).catch((error) => {
 				navigate('/')

@@ -12,7 +12,7 @@ import { createTheme, styled, useTheme } from '@mui/material/styles';
 
 const DrawerFooter = styled('div')(({ theme }) => ({
 	display: 'flex',
-	width: '100%',
+	width: '100%', 
 	alignItems: 'center',
 	alignContent: 'center',
 	justifyContent: 'center',
@@ -23,28 +23,29 @@ const DrawerFooter = styled('div')(({ theme }) => ({
 	...theme.mixins.toolbar,
 }));
 
+
 export default function PostsList() {
 
 	const isXs = useMediaQuery('(max-width:996px)'); // Adjust the width to match your "xs" breakpoint
 
 	const [postsListData, setPostList] = useState([]);
 	
-	useEffect( () => { 
-		
-		async function getPosts() {
-			axios.defaults.withCredentials = true;
-			await axios.get(URL_F + "api/v1/all")
-			.then((response) => {
-				console.log(response.data)
-				setPostList(response.data.results)
-			}).catch((error) => {
-				console.log(error)
-			});
-		}
 
-		getPosts()
-		
-	}, [])
+	useEffect(() => {
+		const getPosts = async () => {
+			try { 
+				const response = await axios.get(URL_F + "api/v1/all", {}, {withCredentials: true});
+	
+				console.log(response.data);
+				setPostList(response.data.results);
+			} catch (error) {
+				console.error(error);
+			}
+		};
+	
+		getPosts();
+	}, []);
+	
 
 	return (
 		<Grid container spacing={2} marginRight={2}>
@@ -54,11 +55,10 @@ export default function PostsList() {
 				alignItems="center"
 				gap={4}
 			>
-				<CreatePost></CreatePost>
+				<CreatePost setPostList={setPostList}></CreatePost>
 				
-				{postsListData.length > 0 && postsListData.map((post) => (
-					<span key={post.id}> {post.id} </span>
-					/*<Post key={index}>xs=8</Post>*/
+				{postsListData.length > 0 && postsListData.sort((a, b) => new Date(b.createdat) - new Date(a.createdat)).map((post) => (
+					<Post key={post.id} user_id={post.user_id} createdat={post.createdat} description={post.description} videopath={post.videopath} ></Post>
 				))}
 
 			</Grid>
@@ -74,8 +74,7 @@ export default function PostsList() {
 				<DrawerFooter>
 					<Typography variant="body2"> © Crazy Challenge </Typography>
 				</DrawerFooter>
-			
-			
+				
 		</Grid>
 	);
 }

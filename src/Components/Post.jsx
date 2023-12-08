@@ -21,6 +21,8 @@ import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 
+import moment from "moment";
+
 import SendIcon from '@mui/icons-material/Send';
 import ReactionPost from './Reaction'
 
@@ -37,7 +39,9 @@ const ExpandMore = styled((props) => {
     }),
 }));
 
-export default function Post() {
+export default function Post({user_id, createdat, description, videopath}) {
+    moment.locale('en');
+
     const [expanded, setExpanded] = React.useState(false);
     const [comments, setComments] = useState([{
         "id": 1,
@@ -103,7 +107,7 @@ export default function Post() {
     const id = open ? 'simple-popover' : undefined;
 
     return (
-        <Card sx={{ maxWidth: 680, boxShadow:0, borderRadius: 3}}>
+        <Card sx={{ minWidth: 680, boxShadow:0, borderRadius: 3}}>
         <CardHeader
             avatar={
             <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
@@ -115,21 +119,19 @@ export default function Post() {
                 <MoreVertIcon />
             </IconButton>
             }
-            title="Shrimp and Chorizo Paella"
-            subheader="September 14, 2016"
+            title={user_id}
+            subheader={moment(createdat).format('d MMMM YYYY, hh:mm')}
         />
         <CardContent>
             <Typography variant="body2" color="text.secondary">
-            This impressive paella is a perfect party dish and a fun meal to cook
-            together with your guests. Add 1 cup of frozen peas along with the mussels,
-            if you like.
+                {description}
             </Typography>
         </CardContent>
         <CardMedia
             component="img"
             height="610"
-            image={img}
-            alt="Puppycat Pick up my groceries peasant"
+            image={videopath}
+            alt={videopath}
         />
         <CardActions disableSpacing >
             <ButtonGroup variant="text" color="error" aria-label="text button group" >

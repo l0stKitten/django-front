@@ -102,7 +102,7 @@ const CustomAppBar = styled(AppBar, {
     // ...
 }));
 
-export default function PrimarySearchAppBar( {openVar, cannotOpen} ) {
+export default function PrimarySearchAppBar( {openVar, cannotOpen, username, points} ) {
 
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
@@ -327,8 +327,8 @@ export default function PrimarySearchAppBar( {openVar, cannotOpen} ) {
                     <Avatar sx={{ width: 10, height: 10 }} {...stringAvatar('Tina Turner')} />
                     </Grid>
                     <Grid item sx={{ml:2}}>
-                    <Typography variant="body2">Tina Turner</Typography>
-                    <Typography variant="body2">Rango: Pro</Typography>
+                    <Typography variant="body2">{username}</Typography>
+                    <Typography variant="body2">Puntos: {points}</Typography>
                     </Grid>
                 </Grid>
                 

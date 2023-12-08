@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
@@ -14,11 +14,53 @@ import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import { Tooltip } from '@mui/material';
 import { red } from '@mui/material/colors';
+import axios from 'axios';
+import {URL_F} from "../config"
+import { useNavigate } from 'react-router-dom';
+import Alert from '@mui/material/Alert';
 
-const CreatePost = ({ onPost }) => {
+const CreatePost = ({ setPostList }) => {
     const [postContent, setPostContent] = useState('');
     const [uploadedImage, setUploadedImage] = useState(null);
     const fileInputRef = useRef(null);
+
+    const [data, setData] = useState([]);
+
+    const navigate = useNavigate();
+
+	useEffect(() => {
+		const dataLS = JSON.parse(localStorage.getItem('data'));
+			if (data) {
+				setData(dataLS);
+
+			console.log(dataLS)
+		}
+	}, []);
+
+    const handleCreatePost = async (e) => {
+        e.preventDefault();
+        console.log('User:', data['id']);
+        console.log('Content:', postContent);
+        console.log('File:', uploadedImage.name);
+    
+        try {
+            const response = await axios.post(URL_F + "api/v1/post", {
+                user_id: data['id'],
+                description: postContent,
+                videopath: uploadedImage.name
+            });
+    
+            console.log(response.data);
+    
+            setPostList((prevList) => {
+                return [...prevList, response.data];
+            });
+    
+            handleCancelClick(); // Call handleCancelClick after the axios request succeeds
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     const handleButtonClick = () => {
         // Trigger the click event of the file input
@@ -40,16 +82,8 @@ const CreatePost = ({ onPost }) => {
         setUploadedImage(file);
     };
 
-    const handlePostSubmit = () => {
-        // Pass the post content to the parent component for further handling
-        onPost(postContent);
-
-        // Clear the input field after submitting the post
-        setPostContent('');
-    };
-
     return (
-        <Card sx={{ minWidth: 680, boxShadow:0, borderRadius: 3}}>
+        <Card sx={{ minWidth: 680, maxWidth: 680, boxShadow:0, borderRadius: 3}}>
         <CardHeader
             avatar={
             <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
@@ -112,6 +146,7 @@ const CreatePost = ({ onPost }) => {
                 <Tooltip title={"Postear"} placement="top" >
                     <IconButton aria-label="post"
                         color="primary"
+                        onClick={handleCreatePost}
                     >
                         <SendOutlinedIcon />
                     </IconButton>
