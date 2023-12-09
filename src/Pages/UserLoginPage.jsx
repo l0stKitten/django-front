@@ -25,19 +25,6 @@ const Image = styled('img')`
 	object-fit: cover; /* Maintain aspect ratio while covering */
 `;
 
-{/*autoComplete='email'
-								{...register("email")}*/}
-{/*autoComplete='new-password'
-								error={!!errors.password}
-								helperText={errors.password?.message}
-								{...register("password")}
-							<Typography variant="caption" color={'error'}>
-								{errors.email?.message}
-							</Typography>
-							
-							*/}
-
-
 const LoginForm = () => {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');

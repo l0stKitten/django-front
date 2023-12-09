@@ -16,8 +16,8 @@ import { Tooltip } from '@mui/material';
 import { red } from '@mui/material/colors';
 import axios from 'axios';
 import {URL_F} from "../config"
+import {URL_FILE_S} from "../config"
 import { useNavigate } from 'react-router-dom';
-import Alert from '@mui/material/Alert';
 
 const CreatePost = ({ setPostList }) => {
     const [postContent, setPostContent] = useState('');
@@ -37,17 +37,40 @@ const CreatePost = ({ setPostList }) => {
 		}
 	}, []);
 
+    const handleCreateImage = async () => {
+        try {
+            const formData = new FormData();
+            formData.append('media', uploadedImage);
+    
+            const response = await axios.post(URL_FILE_S, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+    
+            console.log(response.data);
+            return response.data; // Return the relevant data from the response
+        } catch (error) {
+            console.error(error);
+            throw error; // Re-throw the error to propagate it to the calling function
+        }
+    };
+
     const handleCreatePost = async (e) => {
         e.preventDefault();
-        console.log('User:', data['id']);
-        console.log('Content:', postContent);
-        console.log('File:', uploadedImage.name);
     
         try {
+            console.log('User:', data['id']);
+            console.log('Content:', postContent);
+    
+            // Call handleCreateImage first
+            const fileData = await handleCreateImage();
+    
+            // Proceed with handleCreatePost using the data returned from handleCreateImage
             const response = await axios.post(URL_F + "api/v1/post", {
                 user_id: data['id'],
                 description: postContent,
-                videopath: uploadedImage.name
+                videopath: fileData.path, // Adjust this based on the actual response structure
             });
     
             console.log(response.data);
@@ -59,6 +82,9 @@ const CreatePost = ({ setPostList }) => {
             handleCancelClick(); // Call handleCancelClick after the axios request succeeds
         } catch (error) {
             console.log(error);
+            if(error.response.status == 403){
+                navigate('/')
+            }
         }
     };
 
@@ -69,7 +95,7 @@ const CreatePost = ({ setPostList }) => {
 
     const handleCancelClick = () => {
         setPostContent('')
-        setUploadedImage(null)
+        setUploadedImage()
     };
 
     const handlePostContentChange = (event) => {

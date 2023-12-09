@@ -16,6 +16,6 @@ export default function PostsPage() {
 	}, []);
 	
 	return (
-		<Menu dynamicComponent={PostsList} username={data['username']} points={data['points']} ></Menu>
+		<Menu dynamicComponent={PostsList} username={data['username']} points={data['points']} avatar={data['avatar']} ></Menu>
 	);
 }

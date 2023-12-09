@@ -42,6 +42,7 @@ const ExpandMore = styled((props) => {
 export default function Post({user_id, createdat, description, videopath}) {
     moment.locale('en');
 
+    const pathtoImage = videopath.length > 30 ? "http://localhost:4000/" + videopath.substring(7)  : "http://localhost:4000/media/4082b0c3-caeb-44a8-af16-5474855e4452.png"
     const [expanded, setExpanded] = React.useState(false);
     const [comments, setComments] = useState([{
         "id": 1,
@@ -71,20 +72,13 @@ export default function Post({user_id, createdat, description, videopath}) {
     };
 
     const onCommentSubmit = (commentText) => {
-        // Create a new comment object with the comment text and other relevant data
-         
         setComments((prevComments) => {
             return [...prevComments, {
                 id: 3,
                 content: commentText,
-                author: 'User1', // Replace with the actual author's information
+                author: 'User1',
             }];
         });
-        // Add the new comment to your list of comments (e.g., an array)
-        // You may want to use state management tools like useState or Redux for this
-      
-        // Update the UI to display the new comment
-        // You may need to update your component's state to reflect the new comment
     };
 
     const handleReaction = (icon) => {
@@ -107,7 +101,7 @@ export default function Post({user_id, createdat, description, videopath}) {
     const id = open ? 'simple-popover' : undefined;
 
     return (
-        <Card sx={{ minWidth: 680, boxShadow:0, borderRadius: 3}}>
+        <Card sx={{ minWidth: 680, maxWidth: 680, boxShadow:0, borderRadius: 3}}>
         <CardHeader
             avatar={
             <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
@@ -130,8 +124,8 @@ export default function Post({user_id, createdat, description, videopath}) {
         <CardMedia
             component="img"
             height="610"
-            image={videopath}
-            alt={videopath}
+            image={pathtoImage}
+            alt={pathtoImage}
         />
         <CardActions disableSpacing >
             <ButtonGroup variant="text" color="error" aria-label="text button group" >
@@ -156,7 +150,7 @@ export default function Post({user_id, createdat, description, videopath}) {
                         horizontal: 'left',
                     }}
                 >
-                    <Paper > {/* Adjust alpha value here */}
+                    <Paper >
                         <ReactionPost handleReaction={handleReaction} handleClose={handleClose}/>
                     </Paper>
                 </Popover>

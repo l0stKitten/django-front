@@ -6,6 +6,7 @@ import StepLabel from '@mui/material/StepLabel';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
+import moment from "moment";
 
 import RegisterForm from '../Components/RegisterPage';
 import Preferences from '../Components/PreferencePage'
@@ -16,6 +17,10 @@ import RegisterConfirmation from '../Components/RegisterConfirmation';
 import { useForm} from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import  schema  from '../js/registersYupSchema'
+
+import axios from 'axios';
+import {URL_F} from "../config"
+import {URL_FILE_S} from "../config"
 
 const steps = ['Datos', 'Gustos', 'Perfil', 'Crea'];
 
@@ -30,6 +35,8 @@ export default function UserRegisterPage() {
     const [uploadedImage, setUploadedImage] = useState(null);
     const [termsAcepted, setTermsAcepted] = useState(false);
     const [termsnotAcepted, setTermsNotAcepted] = useState(false);
+
+    moment.locale('en');
 
     const {
 		register,
@@ -88,10 +95,6 @@ export default function UserRegisterPage() {
                 return;
             }
 
-            if (activeStep === steps.length - 1){
-                console.log("REGISTRO EXITOSO")
-            }
-
             if (activeStep === 1 && preferences.length === 0) {
                 setNoPreferences(true)
                 return;
@@ -128,6 +131,56 @@ export default function UserRegisterPage() {
         newSkipped.add(activeStep);
         return newSkipped;
         });
+    };
+
+    const handleCreateImage = async () => {
+        try {
+            const formData = new FormData();
+            formData.append('media', uploadedImage);
+    
+            const response = await axios.post(URL_FILE_S, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+    
+            console.log(response.data);
+            return response.data; // Return the relevant data from the response
+        } catch (error) {
+            console.error(error);
+            throw error; // Re-throw the error to propagate it to the calling function
+        }
+    };
+
+    const handleSubmitRegister = async (e) => {
+        e.preventDefault();
+    
+        try {
+            var data = JSON.stringify(watch(), null, 2)
+            var dataJson = JSON.parse(data)
+            console.log('User:', data);
+            console.log(dataJson['username'], dataJson['fullname'], dataJson['fullname'], dataJson['email'], dataJson['password'], dataJson['biography'], moment(dataJson['dateOfBirth']).format('YYYY-MM-DD') )
+
+            const fileData = await handleCreateImage();
+    
+            const response = await axios.post(URL_F + "api/v1/signup", {
+                username: dataJson['username'],
+                first_name: dataJson['fullname'],
+                last_name: dataJson['fullname'],
+                email: dataJson['email'],
+                password: dataJson['password'],
+                bio: dataJson['biography'],
+                avatar: fileData.path,
+                dateofbirth: moment(dataJson['dateOfBirth']).format('YYYY-MM-DD'),
+            });
+    
+            console.log(response.data);
+            localStorage.setItem('data', JSON.stringify(response.data.user));
+            setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     return (
@@ -225,9 +278,12 @@ export default function UserRegisterPage() {
                 </Grid>)}
                         
                 <Grid item>
-                    <Button variant="contained" onClick={handleNext}>
-                        {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
-                    </Button>
+                    {activeStep < steps.length - 1 &&<Button variant="contained" onClick={handleNext}>
+                        Next
+                    </Button>}
+                    {activeStep === steps.length - 1 && <Button variant="contained" onClick={handleSubmitRegister}>
+                        Finish
+                    </Button>}
                 </Grid>
 
             </Grid>

@@ -1,4 +1,4 @@
-import React, { Fragment} from 'react'
+import React, { useState, useEffect, Fragment } from 'react'
 import { styled, alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -18,6 +18,8 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
+import LogoutIcon from '@mui/icons-material/Logout';
+import Tooltip from '@mui/material/Tooltip';
 import { NavLink } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 
@@ -102,6 +104,8 @@ const CustomAppBar = styled(AppBar, {
     // ...
 }));
 
+
+//{...stringAvatar('Tina Turner')}
 export default function PrimarySearchAppBar( {openVar, cannotOpen, username, points} ) {
 
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -111,6 +115,22 @@ export default function PrimarySearchAppBar( {openVar, cannotOpen, username, poi
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
     const navigate = useNavigate();
+
+    const [avatar, setAvatar] = useState([]);
+
+	useEffect(() => {
+		const dataLS = JSON.parse(localStorage.getItem('data'));
+			if (dataLS) {
+                var pathtoImage = dataLS.length > 30 ? "http://localhost:4000/" + dataLS.substring(7)  : "http://localhost:4000/media/4082b0c3-caeb-44a8-af16-5474855e4452.png"
+				setAvatar(pathtoImage);
+
+			console.log(pathtoImage)
+		}
+	}, []);
+
+    const handleCerrarSesion = () => {
+        navigate('/')
+    }
 
     const handleNavigate = () => {
 		navigate('/posts')
@@ -324,13 +344,25 @@ export default function PrimarySearchAppBar( {openVar, cannotOpen, username, poi
   
                 <Grid container wrap="nowrap" alignItems="center">
                     <Grid item>
-                    <Avatar sx={{ width: 10, height: 10 }} {...stringAvatar('Tina Turner')} />
+                    <Avatar sx={{ width: 50, height: 50 }}  src={avatar}/>
                     </Grid>
                     <Grid item sx={{ml:2}}>
                     <Typography variant="body2">{username}</Typography>
                     <Typography variant="body2">Puntos: {points}</Typography>
                     </Grid>
                 </Grid>
+
+                <Tooltip title="Cerrar Sesión" placement="bottom">
+                    <IconButton
+                        size="large"
+                        aria-label="Cerrar Sesión"
+                        color="inherit"
+                        onClick={handleCerrarSesion}
+                        >
+                        <LogoutIcon />
+                    </IconButton>
+                </Tooltip>
+                
                 
             </Stack>
             <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
